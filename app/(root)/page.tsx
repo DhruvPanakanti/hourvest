@@ -33,7 +33,7 @@ export default async function Home(props: {
             
             <h1 className="text-2xl font-bold text-light-1">Join Our Community</h1>
             
-            <p className="text-light-2 text-center">Create an account to connect with others, share your thoughts, and join the conversation.</p>
+            <p className="text-light-2 text-center">Create an account to connect with others, share your time for help.</p>
             
             <div className="w-full pt-4">
               <Link 
