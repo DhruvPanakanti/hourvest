@@ -8,7 +8,7 @@ import "../globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Ambrosia",
+  title: "Hourvest",
   description: "Threads for cooking!",
   icons: {
     icon: '/favicon.ico',

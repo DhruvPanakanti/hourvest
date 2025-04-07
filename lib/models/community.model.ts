@@ -1,40 +1,20 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
-const communitySchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-  },
-  username: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  image: String,
-  bio: String,
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  threads: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Thread",
-    },
-  ],
-  members: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-});
+export interface ICommunity extends Document {
+  name: string;
+  description?: string;
+  admin: Types.ObjectId;
+  members: Types.ObjectId[];
+  posts: Types.ObjectId[];
+}
 
-const Community =
-  mongoose.models.Community || mongoose.model("Community", communitySchema);
+const CommunitySchema = new Schema<ICommunity>({
+  name: { type: String, required: true, unique: true },
+  description: String,
+  admin: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  members: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  posts: [{ type: Schema.Types.ObjectId, ref: "Post" }]
+}, { timestamps: true });
 
-export default Community;
+export const Community = mongoose.models.Community || 
+  mongoose.model<ICommunity>("Community", CommunitySchema);

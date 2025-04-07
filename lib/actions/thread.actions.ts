@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 
 import { connectToDB } from "../mongoose";
 import { serializeThread } from "../utils/thread.utils";
-import User from "../models/user.model";
+import {User} from "../models/user.model";
 import Thread from "../models/thread.model";
-import Community from "../models/community.model";
+import {Community} from "../models/community.model";
 
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   connectToDB();

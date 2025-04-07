@@ -86,9 +86,6 @@ export default function HomePage() {
       <div id="about">
         <AboutUs />
       </div>
-
-
-      
       <div id="explore" className="relative z-10" style={{ height: '500px' }}>
       <section id="about" className="py-20 bg-dark-2 z-10">
       <div className="container mx-auto px-6 lg:px-12 z-10">
