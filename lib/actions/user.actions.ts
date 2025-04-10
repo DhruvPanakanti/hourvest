@@ -1,113 +1,254 @@
 "use server";
 
-import mongoose from "mongoose";
+import { FilterQuery, SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
-import { User } from "../models/user.model";
-import { Community } from "../models/community.model";
-import { Appeal } from "../models/Appeal.model"; // Import the registered Appeal model
 
-// Set your MongoDB URI from an environment variable or update this string accordingly.
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/yourdbname";
+import{Community} from "../models/community.model";
+import Thread from "../models/thread.model";
+import {User} from "../models/user.model";
 
-/**
- * Connects to MongoDB using Mongoose.
- * Checks the built-in connection state to avoid multiple connection attempts.
- */
-export async function connectToDB() {
-  // mongoose.connection.readyState:
-  // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting.
-  if (mongoose.connection.readyState >= 1) {
-    return;
-  }
-  try {
-    await mongoose.connect(MONGODB_URI);
-    console.log("Connected to MongoDB");
-  } catch (error) {
-    console.error("Could not connect to MongoDB", error);
-    // This error is usually due to the MongoDB server not running or a wrong URI.
-    throw error;
-  }
-}
+import { connectToDB } from "../mongoose";
 
 /**
- * Fetches a user by their userId and populates their communities and appeals.
+ * Fetches a user by their userId and populates their communities.
  */
 export async function fetchUser(userId: string) {
   try {
     await connectToDB();
-    return await User.findOne({ id: userId })
-      .populate([
-        { path: "communities", model: Community, select: "name description" },
-        { path: "appealsCreated", model: Appeal, select: "title status" },
-        { path: "appealsAssisted", model: Appeal, select: "title status" }
-      ]);
+
+    return await User.findOne({ id: userId }).populate({
+      path: "communities",
+      model: Community,
+    });
   } catch (error: any) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
 }
 
-/**
- * Updates a user's details and revalidates the specified path if needed.
- */
-export async function updateUser(params: {
+interface UpdateUserParams {
   userId: string;
   username: string;
   name: string;
-  bio?: string;
-  image?: string;
-  skills?: string[];
+  bio: string;
+  image: string;
   path: string;
-}): Promise<void> {
+}
+
+/**
+ * Updates a user's details and revalidates the specified path if needed.
+ */
+export async function updateUser({
+  userId,
+  bio,
+  name,
+  path,
+  username,
+  image,
+}: UpdateUserParams): Promise<void> {
   try {
     await connectToDB();
+
     await User.findOneAndUpdate(
-      { id: params.userId },
+      { id: userId },
       {
-        username: params.username.toLowerCase(),
-        name: params.name,
-        bio: params.bio,
-        image: params.image,
-        skills: params.skills,
-        onboarded: true
+        username: username.toLowerCase(),
+        name,
+        bio,
+        image,
+        onboarded: true,
       },
       { upsert: true }
     );
-    if (params.path === "/profile/edit") {
-      revalidatePath(params.path);
+
+    if (path === "/profile/edit") {
+      revalidatePath(path);
     }
   } catch (error: any) {
-    throw new Error(`Failed to update user: ${error.message}`);
+    throw new Error(`Failed to create/update user: ${error.message}`);
   }
 }
 
 /**
- * Fetches a list of suggested users excluding the specified user.
+ * Fetches all threads authored by a specific user.
  */
-export async function fetchSuggestedUsers(userId: string, limit = 5) {
+export async function fetchUserPosts(userId: string) {
   try {
     await connectToDB();
-    return await User.find({ id: { $ne: userId } })
-      .select("id name username image")
-      .limit(limit)
-      .lean();
-  } catch (error: any) {
-    throw new Error(`Failed to fetch users: ${error.message}`);
+
+    const user = await User.findOne({ id: userId }).populate({
+      path: "threads",
+      model: Thread,
+      populate: [
+        {
+          path: "community",
+          model: Community,
+          select: "name id image _id",
+        },
+        {
+          path: "children",
+          model: Thread,
+          populate: {
+            path: "author",
+            model: User,
+            select: "name image id",
+          },
+        },
+      ],
+    });
+
+    return user?.threads || [];
+  } catch (error) {
+    console.error("Error fetching user threads:", error);
+    throw error;
+  }
+}
+
+interface FetchUsersParams {
+  userId: string;
+  searchString?: string;
+  pageNumber?: number;
+  pageSize?: number;
+  sortBy?: SortOrder;
+}
+
+/**
+ * Fetches a list of users based on search criteria, with pagination and sorting.
+ */
+export async function fetchUsers({
+  userId,
+  searchString = "",
+  pageNumber = 1,
+  pageSize = 20,
+  sortBy = "desc",
+}: FetchUsersParams) {
+  try {
+    await connectToDB();
+
+    const skipAmount = (pageNumber - 1) * pageSize;
+    const regex = new RegExp(searchString, "i");
+
+    const query: FilterQuery<typeof User> = {
+      id: { $ne: userId },
+    };
+
+    if (searchString.trim() !== "") {
+      query.$or = [{ username: { $regex: regex } }, { name: { $regex: regex } }];
+    }
+
+    const sortOptions = { createdAt: sortBy };
+
+    const users = await User.find(query)
+      .sort(sortOptions)
+      .skip(skipAmount)
+      .limit(pageSize)
+      .exec();
+
+    const totalUsersCount = await User.countDocuments(query);
+    const isNext = totalUsersCount > skipAmount + users.length;
+
+    return { users, isNext };
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
   }
 }
 
 /**
- * Fetches an overview list of user profiles.
- * You can use the 'limit' and 'skip' parameters for pagination.
+ * Retrieves recent activity (replies) for a user's threads.
  */
-export async function fetchUserProfiles(limit = 10, skip = 0) {
+export async function getActivity(userId: string) {
   try {
     await connectToDB();
-    return await User.find({})
-      .select("id name username image bio")
-      .limit(limit)
-      .skip(skip)
-      .lean();
+
+    const userThreads = await Thread.find({ author: userId });
+
+    const childThreadIds = userThreads.reduce((acc, userThread) => {
+      return acc.concat(userThread.children);
+    }, [] as string[]);
+
+    const replies = await Thread.find({
+      _id: { $in: childThreadIds },
+      author: { $ne: userId },
+    }).populate({
+      path: "author",
+      model: User,
+      select: "name image _id",
+    });
+
+    return replies;
+  } catch (error) {
+    console.error("Error fetching replies: ", error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches all replies made by a specific user.
+ */
+export async function fetchUserReplies(userId: string) {
+  try {
+    await connectToDB();
+
+    const user = await User.findOne({ id: userId });
+    if (!user) throw new Error("User not found");
+
+    const replies = await Thread.find({
+      author: user._id,
+      parentId: { $exists: true, $ne: null },
+    })
+      .populate({
+        path: "author",
+        model: User,
+        select: "_id id name image",
+      })
+      .populate({
+        path: "community",
+        model: Community,
+        select: "_id id name image",
+      })
+      .populate({
+        path: "children",
+        populate: {
+          path: "author",
+          model: User,
+          select: "_id id name image",
+        },
+      })
+      .sort({ createdAt: "desc" });
+
+    return {
+      name: user.name,
+      image: user.image,
+      id: user.id,
+      replies: replies,
+    };
   } catch (error: any) {
-    throw new Error(`Failed to fetch user profiles: ${error.message}`);
+    throw new Error(`Failed to fetch user replies: ${error.message}`);
+  }
+}
+
+interface FetchSuggestedUsersParams {
+  userId: string;
+  limit?: number;
+}
+
+/**
+ * Fetches a list of suggested users, excluding the specified user.
+ */
+export async function fetchSuggestedUsers({
+  userId,
+  limit = 5,
+}: FetchSuggestedUsersParams) {
+  try {
+    await connectToDB();
+
+    const users = await User.find({ id: { $ne: userId } })
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    return { users };
+  } catch (error) {
+    console.error("Error fetching suggested users:", error);
+    throw error;
   }
 }
