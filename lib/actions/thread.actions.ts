@@ -19,6 +19,7 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20) {
     .populate({
       path: "author",
       model: User,
+      select: "_id id name image"
     })
     .populate({
       path: "community",

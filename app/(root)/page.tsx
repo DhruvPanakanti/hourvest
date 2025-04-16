@@ -40,7 +40,13 @@ export default async function Home(props: {
               id={post._id}
               currentUserId={user.id}
               parentId={post.parentId}
-              content={post.text}
+              fullName={post.fullName}
+              phoneNo={post.phoneNo}
+              email={post.email}
+              approvalType={post.approvalType}
+              description={post.description}
+              timePeriod={post.timePeriod}
+              rewards={post.rewards}
               author={post.author}
               community={post.community}
               createdAt={post.createdAt}
