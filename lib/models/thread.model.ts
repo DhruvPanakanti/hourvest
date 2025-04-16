@@ -1,7 +1,32 @@
 import mongoose from "mongoose";
 
 const threadSchema = new mongoose.Schema({
-  text: {
+  fullName: {
+    type: String,
+    required: true,
+  },
+  phoneNo: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  approvalType: {
+    type: String,
+    enum: ["online", "offline"],
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  timePeriod: {
+    type: String,
+    required: true,
+  },
+  rewards: {
     type: String,
     required: true,
   },

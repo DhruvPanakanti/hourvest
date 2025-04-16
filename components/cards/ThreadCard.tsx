@@ -8,7 +8,13 @@ interface Props {
   id: string;
   currentUserId: string;
   parentId: string | null;
-  content: string;
+  fullName: string;
+  phoneNo: string;
+  email: string;
+  approvalType: string;
+  description: string;
+  timePeriod: string;
+  rewards: string;
   author: {
     name: string;
     image: string;
@@ -32,7 +38,13 @@ function ThreadCard({
   id,
   currentUserId,
   parentId,
-  content,
+  fullName,
+  phoneNo,
+  email,
+  approvalType,
+  description,
+  timePeriod,
+  rewards,
   author,
   community,
   createdAt,
@@ -67,7 +79,23 @@ function ThreadCard({
               </h4>
             </Link>
 
-            <p className='mt-2 text-small-regular text-light-2'>{content}</p>
+            {!isComment && (
+              <div className="mt-2 space-y-2">
+                <div className="text-small-medium text-gray-1">Full Name: <span className="text-light-2">{fullName}</span></div>
+                <div className="text-small-medium text-gray-1">Phone: <span className="text-light-2">{phoneNo}</span></div>
+                <div className="text-small-medium text-gray-1">Email: <span className="text-light-2">{email}</span></div>
+                <div className="text-small-medium text-gray-1">Approval Type: <span className="text-light-2 uppercase">{approvalType}</span></div>
+                <div className="text-small-medium text-gray-1">Description:</div>
+                <p className="text-small-regular text-light-2">{description}</p>
+                <div className="text-small-medium text-gray-1">Time Period: <span className="text-light-2">{timePeriod}</span></div>
+                <div className="text-small-medium text-gray-1">Rewards:</div>
+                <p className="text-small-regular text-light-2">{rewards}</p>
+              </div>
+            )}
+
+            {isComment && (
+              <p className='mt-2 text-small-regular text-light-2'>{description}</p>
+            )}
 
             <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
               <div className='flex gap-3.5'>
@@ -81,7 +109,7 @@ function ThreadCard({
                 <Link href={`/thread/${id}`}>
                   <Image
                     src='/assets/reply.svg'
-                    alt='heart'
+                    alt='reply'
                     width={24}
                     height={24}
                     className='cursor-pointer object-contain'
@@ -89,14 +117,14 @@ function ThreadCard({
                 </Link>
                 <Image
                   src='/assets/repost.svg'
-                  alt='heart'
+                  alt='repost'
                   width={24}
                   height={24}
                   className='cursor-pointer object-contain'
                 />
                 <Image
                   src='/assets/share.svg'
-                  alt='heart'
+                  alt='share'
                   width={24}
                   height={24}
                   className='cursor-pointer object-contain'
