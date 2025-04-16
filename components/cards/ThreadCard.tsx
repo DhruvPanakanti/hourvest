@@ -3,13 +3,9 @@ import Link from "next/link";
 
 import { formatDateString } from "@/lib/utils";
 import DeleteThread from "../forms/DeleteThread";
-import LikeButton from "../shared/LikeButton";
-import RepostButton from "../shared/RepostButton";
-import ShareButton from "../shared/ShareButton";
-import ClientThreadContent from "@/components/forms/ClientThreadContent";
 
 interface Props {
-  id: any; // Changed from string to any to handle MongoDB ObjectId
+  id: string;
   currentUserId: string;
   parentId: string | null;
   content: string;
@@ -30,7 +26,6 @@ interface Props {
     };
   }[];
   isComment?: boolean;
-  likes?: string[];
 }
 
 function ThreadCard({
@@ -43,60 +38,7 @@ function ThreadCard({
   createdAt,
   comments,
   isComment,
-  likes = [],
 }: Props) {
-  // Convert MongoDB ObjectId to string
-  const threadId = id.toString();
-  
-  // Calculate if user has liked this thread
-  const hasUserLiked = likes.includes(currentUserId);
-  const likesCount = likes.length;
-
-  // Process markdown-like content on the server
-  const processContent = () => {
-    let processedContent = content;
-    
-    // Process hyperlinks - do this first to avoid conflicts with other formatting
-    processedContent = processedContent.replace(
-      /\[([^\]]+)\]\(([^)]+)\)/g, 
-      '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary-500 underline">$1</a>'
-    );
-    
-    // Replace headings (h1 to h6)
-    processedContent = processedContent.replace(/^###### (.*?)$/gm, '<h6>$1</h6>');
-    processedContent = processedContent.replace(/^##### (.*?)$/gm, '<h5>$1</h5>');
-    processedContent = processedContent.replace(/^#### (.*?)$/gm, '<h4>$1</h4>');
-    processedContent = processedContent.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
-    processedContent = processedContent.replace(/^## (.*?)$/gm, '<h2>$1</h2>');
-    processedContent = processedContent.replace(/^# (.*?)$/gm, '<h1>$1</h1>');
-    
-    // Replace underscores with underline tags
-    // Match text between underscores, but not if preceded by backslash
-    processedContent = processedContent.replace(
-      /(?<![\\])_(.+?)(?<![\\])_/g, 
-      '<span style="text-decoration: underline;">$1</span>'
-    );
-    
-    // Replace **text** with bold tags
-    processedContent = processedContent.replace(
-      /(?<![\\])\*\*(.+?)(?<![\\])\*\*/g,
-      '<strong>$1</strong>'
-    );
-    
-    // Replace *text* with italic tags
-    processedContent = processedContent.replace(
-      /(?<![\\])\*(.+?)(?<![\\])\*/g,
-      '<em>$1</em>'
-    );
-    
-    // Replace new lines with <br> tags
-    processedContent = processedContent.replace(/\n/g, '<br>');
-    
-    return processedContent;
-  };
-
-  const processedContent = processContent();
-
   return (
     <article
       className={`flex w-full flex-col rounded-xl ${
@@ -109,7 +51,7 @@ function ThreadCard({
             <Link href={`/profile/${author.id}`} className='relative h-11 w-11'>
               <Image
                 src={author.image}
-                alt='Profile image'
+                alt='user_community_image'
                 fill
                 className='cursor-pointer rounded-full'
               />
@@ -125,44 +67,44 @@ function ThreadCard({
               </h4>
             </Link>
 
-            <ClientThreadContent
-              threadId={threadId}
-              initialContent={content}
-              processedContent={processedContent}
-              currentUserId={currentUserId}
-              authorId={author.id}
-            />
+            <p className='mt-2 text-small-regular text-light-2'>{content}</p>
 
             <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
               <div className='flex gap-3.5'>
-                <LikeButton 
-                  threadId={threadId}
-                  userId={currentUserId}
-                  initialLikes={likesCount}
-                  initialLiked={hasUserLiked}
+                <Image
+                  src='/assets/heart-gray.svg'
+                  alt='heart'
+                  width={24}
+                  height={24}
+                  className='cursor-pointer object-contain'
                 />
-
-                <Link href={`/thread/${threadId}`}>
+                <Link href={`/thread/${id}`}>
                   <Image
                     src='/assets/reply.svg'
-                    alt='reply'
+                    alt='heart'
                     width={24}
                     height={24}
                     className='cursor-pointer object-contain'
                   />
                 </Link>
-                
-                <RepostButton 
-                  threadId={threadId}
-                  userId={currentUserId}
-                  authorId={author.id}
+                <Image
+                  src='/assets/repost.svg'
+                  alt='heart'
+                  width={24}
+                  height={24}
+                  className='cursor-pointer object-contain'
                 />
-                
-                <ShareButton threadId={threadId} />
+                <Image
+                  src='/assets/share.svg'
+                  alt='heart'
+                  width={24}
+                  height={24}
+                  className='cursor-pointer object-contain'
+                />
               </div>
 
               {isComment && comments.length > 0 && (
-                <Link href={`/thread/${threadId}`}>
+                <Link href={`/thread/${id}`}>
                   <p className='mt-1 text-subtle-medium text-gray-1'>
                     {comments.length} repl{comments.length > 1 ? "ies" : "y"}
                   </p>
@@ -173,7 +115,7 @@ function ThreadCard({
         </div>
 
         <DeleteThread
-          threadId={threadId}
+          threadId={JSON.stringify(id)}
           currentUserId={currentUserId}
           authorId={author.id}
           parentId={parentId}
@@ -194,7 +136,7 @@ function ThreadCard({
             />
           ))}
 
-          <Link href={`/thread/${threadId}`}>
+          <Link href={`/thread/${id}`}>
             <p className='mt-1 text-subtle-medium text-gray-1'>
               {comments.length} repl{comments.length > 1 ? "ies" : "y"}
             </p>

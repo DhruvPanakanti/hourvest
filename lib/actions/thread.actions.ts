@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { connectToDB } from "../mongoose";
-import { serializeThread } from "../utils/thread.utils";
+//import { serializeThread } from "../utils/thread.utils";
 import {User} from "../models/user.model";
 import Thread from "../models/thread.model";
 import {Community} from "../models/community.model";
@@ -159,8 +159,6 @@ export async function deleteThread(id: string, path: string): Promise<void> {
 
 export async function fetchThreadById(threadId: string) {
   connectToDB();
-
-  try {
     const thread = await Thread.findById(threadId)
       .populate({
         path: "author",
@@ -197,13 +195,6 @@ export async function fetchThreadById(threadId: string) {
     if (!thread) {
       throw new Error("Thread not found");
     }
-
-    // Serialize the thread
-    return serializeThread(thread);
-  } catch (err) {
-    console.error("Error while fetching thread:", err);
-    throw new Error("Unable to fetch thread");
-  }
 }
 
 export async function addCommentToThread(
