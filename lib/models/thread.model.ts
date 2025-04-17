@@ -1,3 +1,4 @@
+// lib/models/thread.model.ts
 import mongoose from "mongoose";
 
 const threadSchema = new mongoose.Schema({
@@ -51,6 +52,28 @@ const threadSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Thread",
     },
+  ],
+  status: {
+    type: String,
+    enum: ["pending", "accepted", "rejected"],
+    default: "pending",
+  },
+  acceptedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  acceptedAt: {
+    type: Date,
+  },
+  likes: [
+    {
+      type: String,
+    }
+  ],
+  reposts: [
+    {
+      type: String,
+    }
   ],
 });
 

@@ -1,9 +1,9 @@
+import { redirect } from "next/navigation";
+import { currentUser } from "@clerk/nextjs/server";
+import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchUserActivity } from "@/lib/actions/thread.actions";
 import Image from "next/image";
 import Link from "next/link";
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-
-import { fetchUser, getActivity } from "@/lib/actions/user.actions";
 
 async function Page() {
   const user = await currentUser();
@@ -12,40 +12,49 @@ async function Page() {
   const userInfo = await fetchUser(user.id);
   if (!userInfo?.onboarded) redirect("/onboarding");
 
-  const activity = await getActivity(userInfo._id);
+  const activities = await fetchUserActivity(userInfo._id);
 
   return (
-    <>
-      <h1 className='head-text'>Activity</h1>
+    <section>
+      <h1 className="head-text">Activity</h1>
 
-      <section className='mt-10 flex flex-col gap-5'>
-        {activity.length > 0 ? (
-          <>
-            {activity.map((activityItem: any) => (
-              <Link key={activityItem._id} href={`/thread/${activityItem.parentId}`}>
-                <article className='activity-card'>
-                  <Image
-                    src={activityItem.author.image}
-                    alt='user_logo'
-                    width={20}
-                    height={20}
-                    className='rounded-full object-cover'
-                  />
-                  <p className='!text-small-regular text-light-1'>
-                    <span className='mr-1 text-primary-500'>
-                      {activityItem.author.name}
-                    </span>{" "}
-                    replied to your thread
-                  </p>
-                </article>
+      <section className="mt-10 flex flex-col gap-5">
+        {activities.length > 0 ? (
+          activities.map((activity: any) => (
+            <article className="activity-card" key={activity._id}>
+              <Link href={`/profile/${activity.sender.id}`}>
+                <Image
+                  src={activity.sender.image}
+                  alt="user_logo"
+                  width={20}
+                  height={20}
+                  className="rounded-full object-cover"
+                />
               </Link>
-            ))}
-          </>
+              <p className="!text-small-regular text-light-1">
+                <Link href={`/profile/${activity.sender.id}`}>
+                  <span className="mr-1 text-primary-500">
+                    {activity.sender.name}
+                  </span>
+                </Link>
+                {activity.type === "accept" && (
+                  <>
+                    accepted your appeal for{" "}
+                    <Link href={`/thread/${activity.thread._id}`}>
+                      <span className="text-primary-500">
+                        {activity.thread.fullName}
+                      </span>
+                    </Link>
+                  </>
+                )}
+              </p>
+            </article>
+          ))
         ) : (
-          <p className='!text-base-regular text-light-3'>No activity yet</p>
+          <p className="!text-base-regular text-light-3">No activity yet</p>
         )}
       </section>
-    </>
+    </section>
   );
 }
 

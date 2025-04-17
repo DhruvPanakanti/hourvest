@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { formatDateString } from "@/lib/utils";
 import DeleteThread from "../forms/DeleteThread";
+import AcceptThread from "../forms/AcceptThread";
 
 interface Props {
   id: string;
@@ -13,6 +14,12 @@ interface Props {
   email: string;
   approvalType: string;
   description: string;
+  status?: string;
+  acceptedBy?: {
+    name: string;
+    image: string;
+    id: string;
+  } | null;
   timePeriod: string;
   rewards: string;
   author: {
@@ -43,6 +50,8 @@ function ThreadCard({
   email,
   approvalType,
   description,
+  status,
+  acceptedBy,
   timePeriod,
   rewards,
   author,
@@ -101,6 +110,45 @@ return (
                   <p className="text-small-regular text-light-2">{description}</p>
                 </>
               )}
+              <div className="mt-3 flex items-center gap-3">
+              {/* Status indicator */}
+              {status && (
+                <div
+                  className={`text-xs px-2 py-1 rounded-md ${
+                    status === "accepted"
+                      ? "bg-green-500/20 text-green-400"
+                      : status === "rejected"
+                      ? "bg-red-500/20 text-red-400"
+                      : "bg-gray-500/20 text-gray-400"
+                  }`}
+                >
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </div>
+              )}
+
+              {/* Accepted by information */}
+              {status === "accepted" && acceptedBy && (
+                <div className="flex items-center gap-2 text-xs text-gray-1">
+                  <Image
+                    src={acceptedBy.image}
+                    alt="accepter"
+                    width={16}
+                    height={16}
+                    className="rounded-full"
+                  />
+                  <span>Accepted by {acceptedBy.name}</span>
+                </div>
+              )}
+
+              {/* Accept button */}
+              <AcceptThread
+                threadId={id.toString()}
+                currentUserId={currentUserId}  // Clerk ID
+                authorId={author.id}           // Clerk ID
+                status={status || "pending"}
+                acceptedBy={acceptedBy ? acceptedBy.id : null}  // Clerk ID
+              />
+            </div>
               {timePeriod && (
                 <div className="text-small-medium text-gray-1">Time Period: <span className="text-light-2">{timePeriod}</span></div>
               )}
@@ -120,7 +168,7 @@ return (
         </div>
 
         <DeleteThread
-          threadId={JSON.stringify(id)}
+          threadId={id.toString()}
           currentUserId={currentUserId}
           authorId={author.id}
           parentId={parentId}

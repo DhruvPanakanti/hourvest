@@ -36,10 +36,10 @@ export default async function Home(props: {
         ) : (
           result.posts.map((post) => (
             <ThreadCard
-              key={post._id}
-              id={post._id}
+              key={post._id.toString()}
+              id={post._id.toString()}
               currentUserId={user.id}
-              parentId={post.parentId}
+              parentId={post.parentId?.toString() || null}
               fullName={post.fullName}
               phoneNo={post.phoneNo}
               email={post.email}
@@ -47,10 +47,20 @@ export default async function Home(props: {
               description={post.description}
               timePeriod={post.timePeriod}
               rewards={post.rewards}
-              author={post.author}
+              author={{
+                name: post.author.name,
+                image: post.author.image,
+                id: post.author.id  // This should be the Clerk ID, not MongoDB ObjectId
+              }}
               community={post.community}
               createdAt={post.createdAt}
               comments={post.children}
+              status={post.status}
+              acceptedBy={post.acceptedBy ? {
+                id: post.acceptedBy.id,  // This should be the Clerk ID, not MongoDB ObjectId
+                name: post.acceptedBy.name,
+                image: post.acceptedBy.image
+              } : null}
             />
           ))
         )}
