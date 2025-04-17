@@ -11,7 +11,19 @@ interface Result {
   id: string;
   threads: {
     _id: string;
-    text: string;
+    fullName: string;
+    phoneNo: string;
+    email: string;
+    approvalType: string;
+    description: string;
+    timePeriod: string;
+    rewards: string;
+    status?: string;
+    acceptedBy?: {
+      name: string;
+      image: string;
+      id: string;
+    } | null;
     parentId: string | null;
     author: {
       name: string;
@@ -59,7 +71,15 @@ async function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
           id={thread._id}
           currentUserId={currentUserId}
           parentId={thread.parentId}
-          content={thread.text}
+          fullName={thread.fullName}
+          phoneNo={thread.phoneNo}
+          email={thread.email}
+          approvalType={thread.approvalType}
+          description={thread.description}
+          status={thread.status}
+          acceptedBy={thread.acceptedBy}
+          timePeriod={thread.timePeriod}
+          rewards={thread.rewards}
           author={
             accountType === "User"
               ? { name: result.name, image: result.image, id: result.id }

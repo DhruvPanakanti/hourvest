@@ -9,6 +9,7 @@ export interface IUser extends Document {
   skills: string[];
   onboarded: boolean;
   timeBalance: number;
+  threads: Types.ObjectId[]; // Add this field
   appealsCreated: Types.ObjectId[];
   appealsAssisted: Types.ObjectId[];
   communities: Types.ObjectId[];
@@ -23,6 +24,7 @@ const UserSchema = new Schema<IUser>({
   skills: [String],
   onboarded: { type: Boolean, default: false },
   timeBalance: { type: Number, default: 0 },
+  threads: [{ type: Schema.Types.ObjectId, ref: "Thread" }], // Add this field
   appealsCreated: [{ type: Schema.Types.ObjectId, ref: "Appeal" }],
   appealsAssisted: [{ type: Schema.Types.ObjectId, ref: "Appeal" }],
   communities: [{ type: Schema.Types.ObjectId, ref: "Community" }]

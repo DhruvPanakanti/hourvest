@@ -75,28 +75,37 @@ export async function fetchUserPosts(userId: string) {
   try {
     await connectToDB();
 
-    const user = await User.findOne({ id: userId }).populate({
-      path: "threads",
-      model: Thread,
-      populate: [
-        {
-          path: "community",
-          model: Community,
-          select: "name id image _id",
-        },
-        {
-          path: "children",
-          model: Thread,
-          populate: {
-            path: "author",
-            model: User,
-            select: "name image id",
-          },
-        },
-      ],
-    });
+    const user = await User.findOne({ id: userId });
+    if (!user) throw new Error("User not found");
 
-    return user?.threads || [];
+    // Fetch the user's threads/appeals
+    const threads = await Thread.find({ author: user._id })
+      .populate({
+        path: "community",
+        model: Community,
+        select: "name id image _id",
+      })
+      .populate({
+        path: "children",
+        model: Thread,
+        populate: {
+          path: "author",
+          model: User,
+          select: "name image id",
+        },
+      })
+      .populate({
+        path: "acceptedBy",
+        model: User,
+        select: "_id id name image",
+      });
+
+    return {
+      name: user.name,
+      image: user.image,
+      id: user.id,
+      threads: threads,
+    };
   } catch (error) {
     console.error("Error fetching user threads:", error);
     throw error;

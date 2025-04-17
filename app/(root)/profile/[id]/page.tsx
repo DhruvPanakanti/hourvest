@@ -5,11 +5,10 @@ import { redirect } from "next/navigation";
 import { profileTabs } from "@/constants";
 
 import ThreadsTab from "@/components/shared/ThreadsTab";
-import RepliesTab from "@/components/shared/RepliesTab";
 import ProfileHeader from "@/components/shared/ProfileHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { fetchUser, fetchUserReplies } from "@/lib/actions/user.actions";
+import { fetchUser, fetchUserPosts, fetchUserReplies } from "@/lib/actions/user.actions";
 
 async function Page({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -19,8 +18,9 @@ async function Page({ params }: { params: Promise<{ id: string }> }) {
   const userInfo = await fetchUser(resolvedParams.id);
   if (!userInfo?.onboarded) redirect("/onboarding");
   
-  // Make sure we're accessing the threads property correctly
-  const threadCount = userInfo.threads?.length || 0;
+  // Fetch user posts to get thread count
+  const userPosts = await fetchUserPosts(resolvedParams.id);
+  const threadCount = userPosts?.threads?.length || 0;
   
   // Fetch replies to get an accurate count
   const repliesData = await fetchUserReplies(userInfo.id);
@@ -76,7 +76,7 @@ async function Page({ params }: { params: Promise<{ id: string }> }) {
                   accountType="User"
                 />
               ) : tab.value === "replies" ? (
-                <RepliesTab currentUserId={user.id} accountId={userInfo.id} />
+                <></>
               ) : null}
             </TabsContent>
           ))}
