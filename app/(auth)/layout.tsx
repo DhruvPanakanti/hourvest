@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Hourvest",
-  description: "Threads for cooking!",
+  description: "Time Bank Application",
   icons: {
     icon: '/favicon.ico',
   },
