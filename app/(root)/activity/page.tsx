@@ -47,7 +47,7 @@ async function Page() {
                         </span>
                       </Link>
                     ) : (
-                      <span className="text-light-3">[thread unavailable]</span>
+                      <span className="text-light-3">[Appeals unavailable]</span>
                     )}
                   </>
                 )}
