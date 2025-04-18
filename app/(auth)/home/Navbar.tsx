@@ -18,7 +18,7 @@ const NavItem = ({ href, label, isActive, onClick, isMobile }: NavItemProps) => 
     onClick={onClick}
     className={`px-3 py-2 rounded-lg transition-colors ${
       isActive 
-        ? 'bg-purple-300/20 text-purple-400' 
+        ? 'bg-purple-300/20 text-white' 
         : 'text-white hover:text-purple-300 hover:bg-black/40'
     } ${isMobile ? 'block w-full text-center mb-2' : ''} text-base-medium`}
   >
@@ -80,7 +80,7 @@ const Navbar = () => {
               height={36}
               className="sm:w-12 sm:h-12"
             />
-            <h1 className="text-white text-heading4-medium">Ambrosia</h1>
+            <h1 className="text-white text-heading4-medium">Hourvest</h1>
           </div>
 
           {/* Mobile menu button */}

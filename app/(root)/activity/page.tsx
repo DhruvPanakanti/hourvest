@@ -40,11 +40,15 @@ async function Page() {
                 {activity.type === "accept" && (
                   <>
                     accepted your appeal for{" "}
-                    <Link href={`/thread/${activity.thread._id}`}>
-                      <span className="text-primary-500">
-                        {activity.thread.fullName}
-                      </span>
-                    </Link>
+                    {activity.thread ? (
+                      <Link href={`/thread/${activity.thread._id}`}>
+                        <span className="text-primary-500">
+                          {activity.thread.fullName}
+                        </span>
+                      </Link>
+                    ) : (
+                      <span className="text-light-3">[thread unavailable]</span>
+                    )}
                   </>
                 )}
               </p>
