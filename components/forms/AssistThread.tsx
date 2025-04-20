@@ -3,13 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { acceptThread } from "@/lib/actions/thread.actions";
+
 interface Props {
   threadId: string;
   currentUserId: string;
   authorId: string;
   status: string;
   acceptedBy: string | null;
-  buttonText?: string; // Add this new prop to the interface
+  buttonText?: string; // Added custom button text prop
 }
 
 function AcceptThread({
@@ -18,7 +20,7 @@ function AcceptThread({
   authorId,
   status,
   acceptedBy,
-  buttonText = "Accept" // Default to "Accept" if not provided
+  buttonText = "Accept" // Default text is "Accept"
 }: Props) {
   const router = useRouter();
   const [isAccepting, setIsAccepting] = useState(false);
@@ -38,8 +40,6 @@ function AcceptThread({
     setIsAccepting(true);
 
     try {
-      // Import the action function dynamically to avoid TypeScript issues
-      const { acceptThread } = await import("@/lib/actions/thread.actions");
       await acceptThread(threadId, currentUserId);
       router.refresh();
     } catch (error) {

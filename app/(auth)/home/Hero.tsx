@@ -76,7 +76,8 @@ export default function Hero({ heroRef, containerRef }: HeroProps) {
                   fontSize="clamp(1rem, 2vw, 1.25rem)"
                   className='font-semibold text-white leading-tight md:leading-tight cursor-default relative z-10'
                 >
-                  Join our community and rediscover the joy of home cooking. Share recipes, ask questions, and connect with cooks of all levels as you explore the delicious world of homemade food.
+                  Every Hour Counts at Hourvest
+                  Connect, contribute, and thrive in a community where time is valued above all.
                 </GradientText>
               </div>
 
