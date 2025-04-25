@@ -4,7 +4,7 @@ import Reveal from "@/components/ui/Reveal";
 import { ChefHat, MessageCircle, Utensils } from "lucide-react";
 import VariableProximity from '@/components/effects/VariableProximity';
 import GradientText from '@/components/effects/GradientText';
-import ambrosia from "@/public/assets/ambrosia.png";
+
 
 const aboutUs: React.FC = () => {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -99,83 +99,27 @@ const aboutUs: React.FC = () => {
           <div className="order-2 lg:order-1 flex flex-col justify-center">
             <Reveal delay={100}>
               <p className="text-body-medium text-light-2 mb-6">
-                Ambrosia is a social platform dedicated to bringing together passionate home cooks, 
-                professional chefs, and food enthusiasts in a space where culinary knowledge flows freely.
+              Hourvest is a decentralized time-banking platform designed to transform how 
+              communities exchange value—through time, not money.
               </p>
             </Reveal>
             
             <Reveal delay={200}>
               <p className="text-body-medium text-light-2 mb-8">
-                Founded with a mission to combat the global reliance on processed foods, 
-                we aim to empower individuals with the knowledge, skills, and community support 
-                needed to embrace home cooking and healthier eating habits. With over 50% of populations 
-                in many countries consuming processed foods regularly, we're dedicated to reversing this trend 
-                through accessible cooking education and community engagement.
+              Built on the principle that everyone’s time holds equal worth, Hourvest enables users to
+              invest their time providing services in exchange for time credits they can redeem for help
+              in other areas of life. In a global economy where access to services often depends 
+              on income, Hourvest offers an inclusive, skills-based ecosystem that promotes equity, 
+              collaboration, and local resilience.
+
+              We are on a mission to reshape the future of work and community support by unlocking
+              the full potential of peer-to-peer service exchange. As the demand for alternative 
+              economies grows, Hourvest stands at the intersection of social impact and sustainable 
+              innovation.
               </p>
             </Reveal>
           </div>
-
-          {/* Parallax Card - Right Side */}
-          <div className="order-1 lg:order-2 flex justify-center perspective-container relative z-10">
-            <div 
-              ref={cardRef} 
-              className="relative w-full max-w-md transition-transform duration-100 will-change-transform"
-              style={{ transformStyle: 'preserve-3d' }}
-            >
-              <div className="aspect-[0.9] overflow-hidden transform-style-preserve-3d relative">
-                <Image 
-                  src={ambrosia} 
-                  alt="Ambrosia" 
-                  layout="fill"
-                  objectFit="contain"
-                  className="absolute inset-0 z-10"
-                />
-              </div>
-              
-              <div 
-                ref={parallaxItem1}
-                className="absolute -top-4 -right-4 glass-panel p-4 rounded-xl shadow-medium bg-primary-500/20 transition-transform duration-100 backdrop-blur-sm"
-                style={{ transformStyle: 'preserve-3d', zIndex: 10 }}
-              >
-                <div className="flex items-center gap-3">
-                  <ChefHat className="text-primary-500" size={24} />
-                  <div>
-                    <p className="text-base-semibold text-light-1">50+</p>
-                    <p className="text-small-medium text-light-3">Active Users</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div 
-                ref={parallaxItem2}
-                className="absolute -bottom-5 -left-5 glass-panel p-4 rounded-xl shadow-medium bg-primary-500/20 transition-transform duration-100 backdrop-blur-sm"
-                style={{ transformStyle: 'preserve-3d', zIndex: 20 }}
-              >
-                <div className="flex items-center gap-3">
-                  <MessageCircle className="text-primary-500" size={24} />
-                  <div>
-                    <p className="text-base-semibold text-light-1">Real-time</p>
-                    <p className="text-small-medium text-light-3">Discussions</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div 
-                ref={parallaxItem3}
-                className="absolute top-1/2 -translate-y-1/2 -right-10 glass-panel p-4 rounded-xl shadow-medium bg-primary-500/20 transition-transform duration-100 backdrop-blur-sm"
-                style={{ transformStyle: 'preserve-3d', zIndex: 30 }}
-              >
-                <div className="flex items-center gap-3">
-                  <Utensils className="text-primary-500" size={24} />
-                  <div>
-                    <p className="text-base-semibold text-light-1">Healthy</p>
-                    <p className="text-small-medium text-light-3">Recipes</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
       </div>
     </section>
   );

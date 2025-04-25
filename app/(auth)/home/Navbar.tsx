@@ -37,9 +37,7 @@ const Navbar = () => {
   const navItems = [
     { href: '#home', label: 'Home', id: 'home' },
     { href: '#about', label: 'About Us', id: 'about' },
-    { href: '#explore', label: 'Explore', id: 'explore' },
     { href: '#difference', label: 'Why Choose Us', id: 'difference' },
-    { href: '#team', label: 'Our Team', id: 'team' },
   ];
 
   const smoothScrollTo = (elementId: string) => {

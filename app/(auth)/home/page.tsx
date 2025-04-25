@@ -18,38 +18,20 @@ export default function HomePage() {
     {
       image: '/assets/book.png',
       link: 'https://google.com/',
-      title: 'Recipes',
-      description: 'Share your favorite recipes with the community and discover new dishes from around the world.'
+      title: 'Appeals',
+      description: 'Make Appeals to gain the assistance.'
     },
     {
       image: '/assets/chat.png',
       link: 'https://google.com/',
       title: 'Real-time Discussion',
-      description: 'Ask questions and get immediate answers from experienced cooks and food enthusiasts.'
-    },
-    {
-      image: '/assets/like.png',
-      link: 'https://google.com/',
-      title: 'Like & Recommend',
-      description: 'Like your favorite recipes and cooking tips to help others find the best content.'
+      description: 'Ask questions and get immediate assistance from your hourvesties.'
     },
     {
       image: '/assets/groups.png',
       link: 'https://google.com/',
       title: 'Communities',
-      description: 'Join specialized cooking groups focused on cuisines, dietary needs, or cooking techniques.'
-    },
-    {
-      image: '/assets/share.png',
-      link: 'https://google.com/',
-      title: 'Share',
-      description: 'Easily share cooking discoveries and successes with friends on other platforms.'
-    },
-    {
-      image: '/assets/gemini.png',
-      link: 'https://google.com/',
-      title: 'Rephrase',
-      description: 'Rephrase and correct grammar your thread with one click.'
+      description: 'Join specialized  groups focused on Helping, utilizing Time, or invest their time for you.'
     },
   ];
 
